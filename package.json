@@ -1,0 +1,41 @@
+{
+  "name": "ai-limit-tray",
+  "version": "0.1.0",
+  "description": "Codex ve Claude hesap limitlerini sistem tepsisinde izler.",
+  "author": "mehdimirzafaruk",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehdimirzafaruk/ai-limit-tray.git"
+  },
+  "homepage": "https://github.com/mehdimirzafaruk/ai-limit-tray#readme",
+  "bugs": "https://github.com/mehdimirzafaruk/ai-limit-tray/issues",
+  "main": "src/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "check": "node --test",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.mirza.ailimittray",
+    "productName": "AI Limit Tray",
+    "files": ["src/**/*", "assets/icon.png", "package.json", "node_modules/@openai/codex/**/*", "node_modules/@openai/codex-win32-x64/**/*"],
+    "asarUnpack": ["node_modules/@openai/codex-win32-x64/vendor/**/*"],
+    "win": { "target": "nsis", "icon": "assets/icon.ico" },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "AI Limit Tray"
+    }
+  },
+  "dependencies": {
+    "@openai/codex": "0.147.0"
+  },
+  "devDependencies": {
+    "electron": "43.4.0",
+    "electron-builder": "26.15.3"
+  }
+}

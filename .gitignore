@@ -1,0 +1,5 @@
+node_modules/
+dist/
+schemas/
+assets/icon-source.png
+*.log

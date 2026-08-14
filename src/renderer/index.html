@@ -1,0 +1,9 @@
+<!doctype html><html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Limit Tray</title><link rel="stylesheet" href="style.css"></head><body>
+<main><header><div><span class="eyebrow">SİSTEM TEPSİSİ GÖZLEMCİSİ</span><h1>AI Limit Tray</h1><p>Codex ve Claude kullanım pencerelerin tek bakışta.</p></div><button id="refresh" class="secondary">↻ Yenile</button></header>
+<section class="totals"><div id="claudeTotal" class="total claude"></div><div id="codexTotal" class="total"></div></section>
+<section class="toolbar"><div><h2>Hesaplar</h2><small id="updated">Henüz yenilenmedi</small></div><div class="actions"><button data-add="codex">+ Codex hesabı</button><button data-add="claude">+ Claude hesabı</button></div></section>
+<section id="accounts" class="grid"></section>
+<footer><label>Otomatik yenileme <select id="interval"><option value="1">1 dk</option><option value="5">5 dk</option><option value="15">15 dk</option><option value="30">30 dk</option></select></label><span>Tepsi simgesine tıkla: paneli aç/kapat · Fareyi üzerinde tut: özeti gör</span></footer>
+</main><dialog id="addDialog"><form method="dialog"><h3 id="dialogTitle">Hesap ekle</h3><label>Görünen ad<input id="profileName" required maxlength="40" placeholder="Örn. Kişisel Pro"></label><div><button value="cancel" class="secondary">İptal</button><button id="confirmAdd" value="default">Bağla</button></div></form></dialog>
+<script src="app.js"></script></body></html>
