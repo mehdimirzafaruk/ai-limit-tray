@@ -4,9 +4,31 @@ main { padding: 14px; border: 1px solid #344257; border-radius: 10px; }
 header, .line { display: flex; align-items: center; }
 header { gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #263244; }
 header img { width: 28px; height: 28px; }
-header div { display: grid; }
+header div { display: grid; flex: 1; min-width: 0; }
 header b { font-size: 14px; }
 small { color: #8998a7; font-size: 10px; }
+#pin {
+  border: 1px solid #344257; background: #182333; color: #8998a7;
+  border-radius: 7px; width: 26px; height: 26px; font-size: 13px;
+  line-height: 1; cursor: pointer; flex: none; -webkit-app-region: no-drag;
+}
+#pin:hover { border-color: #4a5d78; color: #c6d0d7; }
+#pin.active { background: #1d3b2f; border-color: #2e6b4c; color: #78e5ba; }
+.context { margin: 10px 0 0; padding: 9px 10px; border-radius: 8px; background: #101f2c; border: 1px solid #234a6b; }
+.context .ctx-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 11px; color: #8fa9c2; overflow: hidden; }
+.context .ctx-row span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.context .ctx-row + .ctx-row, .context .meter + .ctx-row { margin-top: 8px; }
+.context .ctx-row strong { font-size: 14px; color: #8ab4ff; white-space: nowrap; }
+.context .ctx-row strong.warn { color: #ffc76b; }
+.context .ctx-row strong.danger { color: #ff7d82; }
+.context .meter { height: 5px; border-radius: 99px; background: #1b2c3d; overflow: hidden; margin: 4px 0 0; }
+.context .meter i { display: block; height: 100%; background: #8ab4ff; border-radius: 99px; }
+.context .meter.warn i { background: #ffc76b; }
+.context .meter.danger i { background: #ff7d82; }
+.context .ctx-empty { color: #6a83a0; font-size: 11px; }
+.context .ctx-limit-warning { margin-top: 6px; overflow: hidden; color: #ffc76b; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.context .ctx-limit-warning.critical { color: #ff8e93; }
+.context .ctx-compact { margin-top: 6px; overflow: hidden; color: #9fc7ff; font-size: 10px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
 .line { justify-content: space-between; gap: 14px; padding: 8px 2px 0; }
 .line strong { font-size: 14px; color: #78e5ba; white-space: nowrap; }
 .line.claude { color: #ffad66; margin: 7px -6px 0; padding: 7px 8px 3px; border-radius: 7px; background: #2b2118; }

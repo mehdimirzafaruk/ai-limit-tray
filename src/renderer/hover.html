@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="tr">
-<head><meta charset="UTF-8"><link rel="stylesheet" href="hover.css"></head>
+<head><meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"><link rel="stylesheet" href="hover.css"></head>
 <body><main>
-  <header><img src="../../assets/icon.png"><div><b>AI Limit Tray</b><small id="updated"></small></div></header>
+  <header><img src="../../assets/icon.png"><div><b>AI Limit Tray</b><small id="updated"></small></div><button id="pin" title="Sabitle / kaldır">📌</button></header>
+  <section id="context" class="context"></section>
   <section id="summary"></section>
 </main><script src="hover.js"></script></body>
 </html>

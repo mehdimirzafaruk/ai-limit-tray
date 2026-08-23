@@ -1,6 +1,7 @@
-<!doctype html><html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="tr"><head><meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI Limit Tray</title><link rel="stylesheet" href="style.css"></head><body>
 <main><header><div><span class="eyebrow">SİSTEM TEPSİSİ GÖZLEMCİSİ</span><h1>AI Limit Tray</h1><p>Codex ve Claude kullanım pencerelerin tek bakışta.</p></div><button id="refresh" class="secondary">↻ Yenile</button></header>
+<section class="context-section"><div class="context-heading"><div><span class="eyebrow">CANLI CONTEXT</span><h2>Aktif oturum</h2></div><small id="contextChecked">Codex ve Claude Desktop izleniyor</small></div><div id="activeContexts" class="context-list"></div></section>
 <section class="totals"><div id="claudeTotal" class="total claude"></div><div id="codexTotal" class="total"></div></section>
 <section class="toolbar"><div><h2>Hesaplar</h2><small id="updated">Henüz yenilenmedi</small></div><div class="actions"><button data-add="codex">+ Codex hesabı</button><button data-add="claude">+ Claude hesabı</button></div></section>
 <section id="accounts" class="grid"></section>

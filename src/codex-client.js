@@ -2,6 +2,13 @@ const { spawn } = require('node:child_process');
 const path = require('node:path');
 const fs = require('node:fs');
 
+const TOKEN_REFRESH_INTERVAL_MS = 4 * 60 * 60 * 1000;
+const AUTH_RECOVERY_INTERVAL_MS = 15 * 60 * 1000;
+
+function isAuthError(error) {
+  return /token[_ ]invalidated|authentication token has been invalidated|401|unauthorized/i.test(String(error?.message || ''));
+}
+
 function codexBinary() {
   const triple = process.platform === 'win32'
     ? (process.arch === 'arm64' ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-msvc')
@@ -28,13 +35,14 @@ class CodexClient {
 
   start() {
     if (this.child) return;
-    this.child = spawn(codexBinary(), ['app-server'], {
+    const child = spawn(codexBinary(), ['app-server'], {
       env: { ...process.env, CODEX_HOME: this.home },
       windowsHide: true,
       stdio: ['pipe', 'pipe', 'pipe']
     });
+    this.child = child;
     let buffer = '';
-    this.child.stdout.on('data', chunk => {
+    child.stdout.on('data', chunk => {
       buffer += chunk.toString();
       const lines = buffer.split(/\r?\n/); buffer = lines.pop();
       for (const line of lines) {
@@ -42,13 +50,18 @@ class CodexClient {
         try { this.onMessage(JSON.parse(line)); } catch { /* diagnostics may be non-JSON */ }
       }
     });
-    this.child.on('exit', () => {
+    // App-server tanı çıktısı zamanla pipe tamponunu doldurup süreci kilitlemesin.
+    child.stderr.resume();
+    const finish = error => {
+      if (this.child !== child) return;
       this.child = null;
       this.initialized = false;
       this.initializing = null;
-      for (const { reject } of this.pending.values()) reject(new Error('Codex app-server kapandı'));
+      for (const { reject } of this.pending.values()) reject(error || new Error('Codex app-server kapandı'));
       this.pending.clear();
-    });
+    };
+    child.on('error', error => finish(new Error(`Codex app-server başlatılamadı: ${error.message}`)));
+    child.on('exit', () => finish(new Error('Codex app-server kapandı')));
   }
 
   onMessage(message) {
@@ -59,18 +72,23 @@ class CodexClient {
     for (const listener of this.listeners) listener(message);
   }
 
-  request(method, params) {
+  request(method, params, timeoutMs = 30000) {
     this.start();
     const id = ++this.seq;
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => { this.pending.delete(id); reject(new Error(`${method} zaman aşımı`)); }, 30000);
+      const timer = setTimeout(() => { this.pending.delete(id); reject(new Error(`${method} zaman aşımı`)); }, timeoutMs);
       this.pending.set(id, {
         resolve: value => { clearTimeout(timer); resolve(value); },
         reject: error => { clearTimeout(timer); reject(error); }
       });
       const message = { jsonrpc: '2.0', id, method };
       if (params !== undefined) message.params = params;
-      this.child.stdin.write(`${JSON.stringify(message)}\n`);
+      this.child.stdin.write(`${JSON.stringify(message)}\n`, error => {
+        if (!error || !this.pending.has(id)) return;
+        const call = this.pending.get(id);
+        this.pending.delete(id);
+        call.reject(new Error(`${method} gönderilemedi: ${error.message}`));
+      });
     });
   }
 
@@ -92,9 +110,9 @@ class CodexClient {
     return result;
   }
 
-  async account() {
+  async account(refreshToken = true) {
     await this.initialize();
-    return this.request('account/read', { refreshToken: false });
+    return this.request('account/read', { refreshToken });
   }
 
   async limits() {
@@ -102,7 +120,54 @@ class CodexClient {
     return this.request('account/rateLimits/read');
   }
 
+  async usage() {
+    // Token yenilemesi limit isteğinden önce tamamlanmalı. Paralel çağrı eski erişim
+    // tokenı ile yarışıp profili hatalı biçimde oturum dışı gösterebiliyordu.
+    const refreshToken = this.tokenRefreshDue();
+    const account = await this.account(refreshToken);
+    if (refreshToken) this.lastRefreshAttemptAt = Date.now();
+    try {
+      const limits = await this.limits();
+      this.lastAuthRecoveryAt = null;
+      return { account, limits };
+    } catch (error) {
+      // Planlı yenileme zamanı gelmeden token sunucu tarafında iptal edilmişse bir
+      // kez zorla yenileyip limit isteğini tekrar dene. Sunucu refresh tokenını
+      // tamamen iptal ettiyse her dakika OAuth servisini gereksiz yere çağırma.
+      if (!isAuthError(error)) throw error;
+      const now = Date.now();
+      if (refreshToken) {
+        this.lastAuthRecoveryAt = now;
+        throw error;
+      }
+      if (this.lastAuthRecoveryAt && now - this.lastAuthRecoveryAt < AUTH_RECOVERY_INTERVAL_MS) throw error;
+      const refreshedAccount = await this.account(true);
+      this.lastRefreshAttemptAt = now;
+      this.lastAuthRecoveryAt = now;
+      const limits = await this.limits();
+      this.lastAuthRecoveryAt = null;
+      return { account: refreshedAccount, limits };
+    }
+  }
+
+  tokenRefreshDue(now = Date.now()) {
+    if (this.lastRefreshAttemptAt) return now - this.lastRefreshAttemptAt >= TOKEN_REFRESH_INTERVAL_MS;
+    try {
+      const auth = JSON.parse(fs.readFileSync(path.join(this.home, 'auth.json'), 'utf8'));
+      const lastRefresh = Date.parse(auth.last_refresh);
+      return !Number.isFinite(lastRefresh) || now - lastRefresh >= TOKEN_REFRESH_INTERVAL_MS;
+    } catch {
+      return true;
+    }
+  }
+
+  async thread(threadId) {
+    await this.initialize();
+    const result = await this.request('thread/read', { threadId, includeTurns: false }, 5000);
+    return result?.thread || null;
+  }
+
   close() { if (this.child) this.child.kill(); }
 }
 
-module.exports = { CodexClient };
+module.exports = { CodexClient, isAuthError, TOKEN_REFRESH_INTERVAL_MS, AUTH_RECOVERY_INTERVAL_MS };

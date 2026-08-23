@@ -21,9 +21,20 @@
   "build": {
     "appId": "com.mirza.ailimittray",
     "productName": "AI Limit Tray",
-    "files": ["src/**/*", "assets/icon.png", "package.json", "node_modules/@openai/codex/**/*", "node_modules/@openai/codex-win32-x64/**/*"],
-    "asarUnpack": ["node_modules/@openai/codex-win32-x64/vendor/**/*"],
-    "win": { "target": "nsis", "icon": "assets/icon.ico" },
+    "files": [
+      "src/**/*",
+      "assets/icon.png",
+      "package.json",
+      "node_modules/@openai/codex/**/*",
+      "node_modules/@openai/codex-win32-*/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/@openai/codex-win32-*/vendor/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
@@ -32,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@openai/codex": "0.147.0"
+    "@openai/codex": "0.149.0"
   },
   "devDependencies": {
     "electron": "43.4.0",
