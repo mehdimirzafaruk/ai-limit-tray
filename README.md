@@ -2,6 +2,11 @@
   <img src="assets/icon.png" width="96" alt="AI Limit Tray simgesi">
 </p>
 
+<p align="center">
+  <a href="https://github.com/mehdimirzafaruk/ai-limit-tray/actions/workflows/test.yml"><img src="https://github.com/mehdimirzafaruk/ai-limit-tray/actions/workflows/test.yml/badge.svg" alt="tests"></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT lisansı">
+</p>
+
 # AI Limit Tray
 
 Codex ve Claude kullanım limitlerini Windows sistem tepsisinden takip etmek için küçük bir masaüstü uygulaması.
