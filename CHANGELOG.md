@@ -2,6 +2,7 @@
 
 ## Yayınlanmadı
 
+- YENİ: Editörler arası girinti ve satır sonu tutarlılığı için `.editorconfig` eklendi.
 - YENİ: Codex ve Claude Code oturumlarında gerçekleşen context sıkıştırmaları doğrudan oturum
   olaylarından algılanıyor; ana kart, hover özeti ve pencere katmanı `Compact uygulandı` bilgisini
   ve sıkıştırma sayısını gösteriyor.
