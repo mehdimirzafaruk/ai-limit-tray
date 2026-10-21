@@ -20,3 +20,7 @@ Pull request göndermeden önce:
 ## Hata bildirimi
 
 İşletim sistemi sürümünü, uygulama sürümünü, beklenen davranışı ve gördüğünüz davranışı yazın. Hesap tokenlarını veya kimlik doğrulama dosyalarını issue içine eklemeyin.
+
+## Editör ayarları
+
+Repo kökündeki `.editorconfig` ve `.gitattributes` girinti (2 boşluk) ve satır sonu (LF, `.bat` için CRLF) kurallarını sabitler. Editörünüzün EditorConfig desteğini açmanız yeterlidir.
